@@ -6,8 +6,8 @@ namespace fysics {
 struct Vec2 {
   float x, y;
 
-  constexpr Vec2() : x(0.0f), y(0.0f) {}
-  constexpr Vec2(float x, float y) : x(x), y(y) {}
+  constexpr Vec2() : x{0.0f}, y{0.0f} {}
+  constexpr Vec2(float x, float y) : x{x}, y{y} {}
 
   constexpr Vec2 operator-() const { return {-x, -y}; }
 
@@ -52,7 +52,7 @@ struct Vec2 {
 
   // returns the unit vector in this direction, or the zero vector if this has
   // zero length
-  Vec2 normalize() const {
+  [[nodiscard]] Vec2 normalize() const {
     float n = norm();
     if (n == 0.0f)
       return {};
@@ -71,11 +71,11 @@ struct Mat22 {
   Vec2 c0, c1;
 
   // identity
-  constexpr Mat22() : c0(1.0f, 0.0f), c1(0.0f, 1.0f) {}
-  constexpr Mat22(const Vec2 &c0, const Vec2 &c1) : c0(c0), c1(c1) {}
+  constexpr Mat22() : c0{1.0f, 0.0f}, c1{0.0f, 1.0f} {}
+  constexpr Mat22(const Vec2 &c0, const Vec2 &c1) : c0{c0}, c1{c1} {}
   // row-major element order
   constexpr Mat22(float m00, float m01, float m10, float m11)
-      : c0(m00, m10), c1(m01, m11) {}
+      : c0{m00, m10}, c1{m01, m11} {}
 
   static constexpr Mat22 identity() { return {}; }
   static constexpr Mat22 zero() { return {Vec2{}, Vec2{}}; }
@@ -102,7 +102,7 @@ struct Mat22 {
     return *this;
   }
 
-  constexpr Mat22 transpose() const {
+  [[nodiscard]] constexpr Mat22 transpose() const {
     return {Vec2{c0.x, c1.x}, Vec2{c0.y, c1.y}};
   }
 
@@ -110,7 +110,7 @@ struct Mat22 {
 
   // returns the zero matrix if this is singular. for a pure rotation, prefer
   // transpose(), which is the same thing and cheaper
-  constexpr Mat22 inverse() const {
+  [[nodiscard]] constexpr Mat22 inverse() const {
     float det = determinant();
     if (det == 0.0f)
       return zero();
@@ -151,7 +151,7 @@ struct Mat23 {
   // identity
   constexpr Mat23() = default;
   constexpr Mat23(const Mat22 &linear, const Vec2 &translation)
-      : linear(linear), translation(translation) {}
+      : linear{linear}, translation{translation} {}
 
   static constexpr Mat23 identity() { return {}; }
 
@@ -168,13 +168,13 @@ struct Mat23 {
   constexpr Vec2 transform_vector(const Vec2 &v) const { return linear * v; }
 
   // general affine inverse. returns a zero linear part if this is singular
-  constexpr Mat23 inverse() const {
+  [[nodiscard]] constexpr Mat23 inverse() const {
     Mat22 inv = linear.inverse();
     return {inv, -(inv * translation)};
   }
 
   // inverse assuming linear is a pure rotation
-  constexpr Mat23 inverse_rot() const {
+  [[nodiscard]] constexpr Mat23 inverse_rot() const {
     Mat22 inv = linear.transpose();
     return {inv, -(inv * translation)};
   }
