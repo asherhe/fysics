@@ -1,30 +1,9 @@
 #pragma once
 
-#include "math.hpp"
+#include "fysics/math.hpp"
+#include "fysics/types.hpp"
 
 namespace fysics {
-
-enum class SimulationType { Static, Dynamic };
-
-struct BodyConfig {
-  // position, m
-  Vec2 pos{0.0f, 0.0f};
-  // velocity, m/s
-  Vec2 vel{0.0f, 0.0f};
-
-  // angle, rad
-  float angle = 0.0f;
-  // angular velocity, rad/s
-  float ang_vel = 0.0f;
-
-  // mass, kg
-  float mass = 1.0f;
-
-  // rigidbody simulation type
-  //   SimulationType::Static  - position, orientation fixed in place
-  //   SimulationType::Dynamic - full simulation of collision response
-  SimulationType sim_type = SimulationType::Static;
-};
 
 class Body {
 private:
@@ -81,4 +60,4 @@ public:
   }
 };
 
-} // namespace fysics
+}
