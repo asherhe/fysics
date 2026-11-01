@@ -39,7 +39,7 @@ public:
   // find storage for a new item, set it to val, and return a Pool::Id for that new item
   Id add(const T &val) {
     if (free_ids_.empty()) {
-      Id id{pool_.size(), 0};
+      Id id{static_cast<PoolIndex>(pool_.size()), 0};
       pool_.push_back({false, 0, val});
       return id;
     }
