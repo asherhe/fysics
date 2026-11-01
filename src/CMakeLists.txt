@@ -1,5 +1,6 @@
 add_library(fysics STATIC
   body.hpp
+  body.cpp
 )
 
 add_library(Fysics::core ALIAS fysics)

@@ -5,13 +5,32 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(FYSICS_BUILD_DEMO "Build the fysics demo executable" ON)
+option(FYSICS_BUILD_TESTS "Build the fysics test suite" ${PROJECT_IS_TOP_LEVEL})
+
+include(FetchContent)
 
 add_subdirectory(src)
 
+# optionally build tests
+if(FYSICS_BUILD_TESTS)
+
+  enable_testing()
+
+  # fetch Catch2
+  FetchContent_Declare(
+    Catch2
+    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+    GIT_TAG        v3.8.1
+    GIT_SHALLOW    TRUE
+  )
+  FetchContent_MakeAvailable(Catch2)
+
+  add_subdirectory(tests)
+
+endif()
+
 # optionally build demo program
 if(FYSICS_BUILD_DEMO)
-  
-  include(FetchContent)
 
   # fetch SDL3
   FetchContent_Declare(

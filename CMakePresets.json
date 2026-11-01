@@ -13,7 +13,8 @@
       "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "FYSICS_BUILD_DEMO": "ON"
+        "FYSICS_BUILD_DEMO": "ON",
+        "FYSICS_BUILD_TESTS": "ON"
       }
     },
     {
@@ -24,7 +25,8 @@
       "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "FYSICS_BUILD_DEMO": "ON"
+        "FYSICS_BUILD_DEMO": "ON",
+        "FYSICS_BUILD_TESTS": "ON"
       }
     }
   ],
@@ -36,6 +38,22 @@
     {
       "name": "release",
       "configurePreset": "release"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "default",
+      "configurePreset": "default",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "release",
+      "configurePreset": "release",
+      "output": {
+        "outputOnFailure": true
+      }
     }
   ]
 }
