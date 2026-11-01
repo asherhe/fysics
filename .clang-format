@@ -5,6 +5,7 @@ IndentWidth: 2
 AccessModifierOffset: -2
 PointerAlignment: Right
 BreakBeforeBraces: Attach
+MaxEmptyLinesToKeep: 2
 
 AllowShortFunctionsOnASingleLine: Inline
 AllowShortBlocksOnASingleLine: Empty

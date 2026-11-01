@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <variant>
 
 #include "fysics/math.hpp"
 
@@ -15,6 +16,25 @@ struct BodyId {
   std::uint16_t generation; // generation of object in pool
   WorldId world_id;         // identifier of World instance
 };
+
+
+struct CircleShape {
+  float radius;
+};
+
+struct BoxShape {
+  // {x, y} dimensions of box
+  Vec2 dimensions;
+};
+
+// describes the geometry of a fysics::Body. carries no information about the
+// location of the shape in world space, only a definition of the body's shape.
+//
+// internally, fysics::Shape uses std::variant to discriminate between Shape
+// subtypes (e.g. CircleShape, BoxShape, etc.), so that all the options can be
+// encoded into one value.
+using Shape = std::variant<CircleShape, BoxShape>;
+
 
 // defines fysics::Body's behaviour in motion
 //   SimulationType::Static  - position, orientation fixed in place
@@ -38,7 +58,11 @@ struct BodyConfig {
 
   // rigidbody simulation type
   SimulationType sim_type = SimulationType::Dynamic;
+
+  // collider geometry of body
+  Shape shape;
 };
+
 
 // maximum number of worlds that can be created
 inline constexpr std::size_t MAX_WORLDS = UINT16_MAX;

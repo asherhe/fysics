@@ -17,7 +17,7 @@ private:
 
   // only fysics::World can construct a new Body
   friend class World;
-  explicit Body(BodyId id, World &world) noexcept : world_{&world}, id_{id} {}
+  explicit Body(BodyId id, World &world) noexcept : id_{id}, world_{&world} {}
 
 public:
   [[nodiscard]] BodyId id() const noexcept { return id_; }
@@ -39,6 +39,9 @@ public:
 
   SimulationType get_sim_type() const;
   void set_sim_type(SimulationType sim_type);
+
+  Shape get_shape() const;
+  void set_shape(const Shape &shape);
 };
 
 // physics world that manages simulation of all physics objects

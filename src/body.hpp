@@ -14,16 +14,17 @@ class Body {
 private:
   Vec2 pos_, vel_;
   float angle_, ang_vel_;
+  Mat23 body2world_, world2body_;
   float mass_, inv_mass_;
   SimulationType sim_type_;
-  Mat23 body2world_, world2body_;
+  Shape shape_;
 
   void update_derived_fields() noexcept;
 
 public:
   explicit Body(const BodyConfig &config)
       : pos_{config.pos}, vel_{config.vel}, angle_{config.angle}, ang_vel_{config.ang_vel},
-        mass_{config.mass}, sim_type_{config.sim_type} {
+        mass_{config.mass}, sim_type_{config.sim_type}, shape_{config.shape} {
     update_derived_fields();
   }
 
@@ -60,6 +61,12 @@ public:
   SimulationType get_sim_type() const noexcept { return sim_type_; }
   void set_sim_type(SimulationType sim_type) noexcept {
     sim_type_ = sim_type;
+    update_derived_fields();
+  }
+
+  Shape get_shape() const noexcept { return shape_; }
+  void set_shape(const Shape &shape) noexcept {
+    shape_ = shape;
     update_derived_fields();
   }
 };
