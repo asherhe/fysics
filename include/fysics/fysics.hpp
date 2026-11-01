@@ -51,12 +51,8 @@ private:
   struct Impl;
   std::unique_ptr<Impl> impl_;
 
-  // only World::create() may create new World objects.
-  explicit World(const WorldConfig &config) {} // todo: initialize fields
-
 public:
-  // create a new fysics::World instance
-  static World create(const WorldConfig &config);
+  explicit World(const WorldConfig &config);
 
   // instantiate a new fysics::Body in the physics world
   Body create_body(const BodyConfig &config);
