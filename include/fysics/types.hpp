@@ -21,11 +21,15 @@ struct BodyId {
 
 struct CircleShape {
   float radius;
+
+  Vec2 center_of_mass() const;
 };
 
 struct BoxShape {
   // {x, y} dimensions of box
   Vec2 dimensions;
+
+  Vec2 center_of_mass() const;
 };
 
 // describes the geometry of a fysics::Body. carries no information about the

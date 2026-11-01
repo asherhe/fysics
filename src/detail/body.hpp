@@ -14,10 +14,18 @@ class Body {
 private:
   Vec2 pos_, vel_;
   float angle_, ang_vel_;
+
+  // transforms between body <-> world space
+  // body space is defined to be the coordinate space of Body::shape_. note that Body::pos_ is
+  // anchored to the center of mass of the shape, so these transform matrices do not put world space
+  // pos_ at the body space origin.
   Mat23 body2world_, world2body_;
+
   float mass_, inv_mass_;
   SimulationType sim_type_;
+
   Shape shape_;
+  Vec2 center_of_mass_; // center of mass in shape_ space
 
   void update_derived_fields() noexcept;
 
