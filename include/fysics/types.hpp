@@ -8,13 +8,14 @@
 namespace fysics {
 
 // unique identifier assigned to every fysics::World
+using Generation = std::uint16_t;
 using WorldId = std::uint16_t;
 
 // unique identifier assigned to every fysics::Body
 struct BodyId {
-  std::uint32_t id;         // unique among loaded Bodies in a World
-  std::uint16_t generation; // generation of object in pool
-  WorldId world_id;         // identifier of World instance
+  std::uint32_t id;      // unique among loaded Bodies in a World
+  Generation generation; // generation of object in pool
+  WorldId world_id;      // identifier of World instance
 };
 
 
