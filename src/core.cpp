@@ -1,2 +1,0 @@
-
-namespace fysics {} // namespace fysics

@@ -1,7 +1,8 @@
 #pragma once
 
-#include "math.hpp"
 #include <cstdint>
+
+#include "fysics/math.hpp"
 
 namespace fysics {
 
@@ -18,7 +19,7 @@ struct BodyId {
 // defines fysics::Body's behaviour in motion
 //   SimulationType::Static  - position, orientation fixed in place
 //   SimulationType::Dynamic - full simulation of collision response
-enum class SimulationType { Static, Dynamic };
+enum class SimulationType : std::uint8_t { Static, Dynamic };
 
 // configuration for creating a fysics::Body
 struct BodyConfig {

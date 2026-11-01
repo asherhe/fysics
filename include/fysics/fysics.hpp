@@ -1,7 +1,8 @@
 #pragma once
 
 #include <memory>
-#include "types.hpp"
+
+#include "fysics/types.hpp"
 
 namespace fysics {
 
@@ -11,15 +12,15 @@ class World;
 class Body {
 private:
   // internal reference to a body under fysics::World.
-  BodyId _id;
-  World &_world;
+  BodyId id_;
+  World *world_;
 
   // only fysics::World can construct a new Body
   friend class World;
-  explicit Body(BodyId id, World &world) noexcept : _world{world}, _id{id} {}
+  explicit Body(BodyId id, World &world) noexcept : world_{&world}, id_{id} {}
 
 public:
-  BodyId id() const noexcept { return _id; }
+  [[nodiscard]] BodyId id() const noexcept { return id_; }
 
   Vec2 get_pos() const;
   void set_pos(const Vec2 &pos);
@@ -45,7 +46,7 @@ class World {
 private:
   // internal implementation of fysics::World - not publicly exposed
   struct Impl;
-  std::unique_ptr<Impl> _impl;
+  std::unique_ptr<Impl> impl_;
 
   // only World::create() may create new World objects.
   explicit World(const WorldConfig &config) {} // todo: initialize fields

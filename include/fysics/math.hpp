@@ -3,6 +3,7 @@
 #include <cmath>
 
 namespace fysics {
+
 struct Vec2 {
   float x, y;
 
@@ -38,9 +39,8 @@ struct Vec2 {
   constexpr float cross(const Vec2 &v) const { return x * v.y - y * v.x; }
 
   // (0, 0, s) x (x, y, 0)
-  static constexpr Vec2 cross(float s, const Vec2 &v) {
-    return {-s * v.y, s * v.x};
-  }
+  static constexpr Vec2 cross(float s, const Vec2 &v) { return {-s * v.y, s * v.x}; }
+
   // (x, y, 0) x (0, 0, s)
   constexpr Vec2 cross(float s) const { return {s * y, -s * x}; }
 
@@ -60,11 +60,21 @@ struct Vec2 {
   }
 };
 
-constexpr Vec2 operator+(Vec2 a, const Vec2 &b) { return a += b; }
-constexpr Vec2 operator-(Vec2 a, const Vec2 &b) { return a -= b; }
-constexpr Vec2 operator*(Vec2 v, float s) { return v *= s; }
-constexpr Vec2 operator*(float s, Vec2 v) { return v *= s; }
-constexpr Vec2 operator/(Vec2 v, float s) { return v /= s; }
+constexpr Vec2 operator+(Vec2 a, const Vec2 &b) {
+  return a += b;
+}
+constexpr Vec2 operator-(Vec2 a, const Vec2 &b) {
+  return a -= b;
+}
+constexpr Vec2 operator*(Vec2 v, float s) {
+  return v *= s;
+}
+constexpr Vec2 operator*(float s, Vec2 v) {
+  return v *= s;
+}
+constexpr Vec2 operator/(Vec2 v, float s) {
+  return v /= s;
+}
 
 // 2x2 matrix stored as columns: [c0 c1]
 struct Mat22 {
@@ -74,8 +84,7 @@ struct Mat22 {
   constexpr Mat22() : c0{1.0f, 0.0f}, c1{0.0f, 1.0f} {}
   constexpr Mat22(const Vec2 &c0, const Vec2 &c1) : c0{c0}, c1{c1} {}
   // row-major element order
-  constexpr Mat22(float m00, float m01, float m10, float m11)
-      : c0{m00, m10}, c1{m01, m11} {}
+  constexpr Mat22(float m00, float m01, float m10, float m11) : c0{m00, m10}, c1{m01, m11} {}
 
   static constexpr Mat22 identity() { return {}; }
   static constexpr Mat22 zero() { return {Vec2{}, Vec2{}}; }
@@ -102,9 +111,7 @@ struct Mat22 {
     return *this;
   }
 
-  [[nodiscard]] constexpr Mat22 transpose() const {
-    return {Vec2{c0.x, c1.x}, Vec2{c0.y, c1.y}};
-  }
+  [[nodiscard]] constexpr Mat22 transpose() const { return {Vec2{c0.x, c1.x}, Vec2{c0.y, c1.y}}; }
 
   constexpr float determinant() const { return c0.cross(c1); }
 
@@ -129,10 +136,18 @@ struct Mat22 {
   }
 };
 
-constexpr Mat22 operator+(Mat22 a, const Mat22 &b) { return a += b; }
-constexpr Mat22 operator-(Mat22 a, const Mat22 &b) { return a -= b; }
-constexpr Mat22 operator*(Mat22 m, float s) { return m *= s; }
-constexpr Mat22 operator*(float s, Mat22 m) { return m *= s; }
+constexpr Mat22 operator+(Mat22 a, const Mat22 &b) {
+  return a += b;
+}
+constexpr Mat22 operator-(Mat22 a, const Mat22 &b) {
+  return a -= b;
+}
+constexpr Mat22 operator*(Mat22 m, float s) {
+  return m *= s;
+}
+constexpr Mat22 operator*(float s, Mat22 m) {
+  return m *= s;
+}
 
 constexpr Vec2 operator*(const Mat22 &m, const Vec2 &v) {
   return m.c0 * v.x + m.c1 * v.y;
@@ -161,9 +176,7 @@ struct Mat23 {
   }
 
   // homogeneous w = 1: affected by translation
-  constexpr Vec2 transform_point(const Vec2 &p) const {
-    return linear * p + translation;
-  }
+  constexpr Vec2 transform_point(const Vec2 &p) const { return linear * p + translation; }
   // homogeneous w = 0: unaffected by translation
   constexpr Vec2 transform_vector(const Vec2 &v) const { return linear * v; }
 
@@ -174,7 +187,7 @@ struct Mat23 {
   }
 
   // inverse assuming linear is a pure rotation
-  [[nodiscard]] constexpr Mat23 inverse_rot() const {
+  constexpr Mat23 inverse_rot() const {
     Mat22 inv = linear.transpose();
     return {inv, -(inv * translation)};
   }
@@ -184,4 +197,5 @@ struct Mat23 {
 constexpr Mat23 operator*(const Mat23 &a, const Mat23 &b) {
   return {a.linear * b.linear, a.linear * b.translation + a.translation};
 }
+
 } // namespace fysics

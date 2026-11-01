@@ -1,0 +1,24 @@
+BasedOnStyle: LLVM
+Language: Cpp
+
+IndentWidth: 2
+AccessModifierOffset: -2
+PointerAlignment: Right
+BreakBeforeBraces: Attach
+
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortBlocksOnASingleLine: Empty
+
+ColumnLimit: 100 
+ReflowComments: true
+
+# group includes by std, fysics, then all other
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '^<.*>'
+    Priority: 1
+  - Regex: '^"fysics/.*"'
+    Priority: 2
+  - Regex: '.*'
+    Priority: 3

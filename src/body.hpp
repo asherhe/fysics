@@ -12,55 +12,54 @@ namespace fysics::detail {
 // instance in the World rigidbody pool.
 class Body {
 private:
-  Vec2 _pos, _vel;
-  float _angle, _ang_vel;
-  float _mass, _inv_mass;
-  SimulationType _sim_type;
-  Mat23 _body2world, _world2body;
+  Vec2 pos_, vel_;
+  float angle_, ang_vel_;
+  float mass_, inv_mass_;
+  SimulationType sim_type_;
+  Mat23 body2world_, world2body_;
 
   void update_derived_fields() noexcept;
 
 public:
   explicit Body(const BodyConfig &config)
-      : _pos{config.pos}, _vel{config.vel}, _angle{config.angle},
-        _ang_vel{config.ang_vel}, _mass{config.mass},
-        _sim_type{config.sim_type} {
+      : pos_{config.pos}, vel_{config.vel}, angle_{config.angle}, ang_vel_{config.ang_vel},
+        mass_{config.mass}, sim_type_{config.sim_type} {
     update_derived_fields();
   }
 
-  Vec2 get_pos() const noexcept { return _pos; }
+  Vec2 get_pos() const noexcept { return pos_; }
   void set_pos(const Vec2 &pos) noexcept {
-    _pos = pos;
+    pos_ = pos;
     update_derived_fields();
   }
 
-  Vec2 get_vel() const noexcept { return _vel; }
+  Vec2 get_vel() const noexcept { return vel_; }
   void set_vel(const Vec2 &vel) noexcept {
-    _vel = vel;
+    vel_ = vel;
     update_derived_fields();
   }
 
-  float get_angle() const noexcept { return _angle; }
+  float get_angle() const noexcept { return angle_; }
   void set_angle(float angle) noexcept {
-    _angle = angle;
+    angle_ = angle;
     update_derived_fields();
   }
 
-  float get_ang_vel() const noexcept { return _ang_vel; }
+  float get_ang_vel() const noexcept { return ang_vel_; }
   void set_ang_vel(float ang_vel) noexcept {
-    _ang_vel = ang_vel;
+    ang_vel_ = ang_vel;
     update_derived_fields();
   }
 
-  float get_mass() const noexcept { return _mass; }
+  float get_mass() const noexcept { return mass_; }
   void set_mass(float mass) noexcept {
-    _mass = mass;
+    mass_ = mass;
     update_derived_fields();
   }
 
-  SimulationType get_sim_type() const noexcept { return _sim_type; }
+  SimulationType get_sim_type() const noexcept { return sim_type_; }
   void set_sim_type(SimulationType sim_type) noexcept {
-    _sim_type = sim_type;
+    sim_type_ = sim_type;
     update_derived_fields();
   }
 };
