@@ -1,44 +1,65 @@
 #pragma once
 
-#include "fysics/types.hpp"
 #include <memory>
+#include "types.hpp"
 
 namespace fysics {
 
+class World;
+
+// a rigidbody object simulated by the physics world
+class Body {
+private:
+  // internal reference to a body under fysics::World.
+  BodyId _id;
+  World &_world;
+
+  // only fysics::World can construct a new Body
+  friend class World;
+  explicit Body(BodyId id, World &world) noexcept : _world{world}, _id{id} {}
+
+public:
+  BodyId id() const noexcept { return _id; }
+
+  Vec2 get_pos() const;
+  void set_pos(const Vec2 &pos);
+
+  Vec2 get_vel() const;
+  void set_vel(const Vec2 &vel);
+
+  float get_angle() const;
+  void set_angle(float angle);
+
+  float get_ang_vel() const;
+  void set_ang_vel(float ang_vel);
+
+  float get_mass() const;
+  void set_mass(float mass);
+
+  SimulationType get_sim_type() const;
+  void set_sim_type(SimulationType sim_type);
+};
+
+// physics world that manages simulation of all physics objects
 class World {
 private:
   // internal implementation of fysics::World - not publicly exposed
   struct Impl;
   std::unique_ptr<Impl> _impl;
 
-  World(const WorldConfig &config) {} // todo: initialize fields
+  // only World::create() may create new World objects.
+  explicit World(const WorldConfig &config) {} // todo: initialize fields
 
 public:
-  static WorldId &create(const WorldConfig &config);
+  // create a new fysics::World instance
+  static World create(const WorldConfig &config);
 
-  BodyId create_body(const BodyConfig &config);
+  // instantiate a new fysics::Body in the physics world
+  Body create_body(const BodyConfig &config);
+  Body get_body(BodyId id);
   void delete_body(BodyId id);
 
-  // getters, setters for Body fields 
-
-  Vec2 get_body_pos(BodyId id);
-  void set_body_pos(BodyId id, const Vec2 &pos);
-
-  Vec2 get_body_vel(BodyId id);
-  void set_body_vel(BodyId id, const Vec2 &vel);
-
-  float get_body_angle(BodyId id);
-  void set_body_angle(BodyId id, float angle);
-
-  float get_body_ang_vel(BodyId id);
-  void set_body_ang_vel(BodyId id, float ang_vel);
-
-  float get_body_mass(BodyId id);
-  void set_body_mass(BodyId id, float mass);
-
-  SimulationType get_body_sim_type(BodyId id);
-  void set_body_sim_type(BodyId id, SimulationType sim_type);
-
+  // advance physics simulation by dt seconds
   void step(float dt);
 };
 

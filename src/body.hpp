@@ -3,8 +3,13 @@
 #include "fysics/math.hpp"
 #include "fysics/types.hpp"
 
-namespace fysics {
+namespace fysics::detail {
 
+// internal implementation of rigidbodies
+// since the lifecycle of bodies is controlled by the fysics::World, the user
+// should not have access to the underlying Body instance. instead, access is
+// provided with the fysics::Body wrapper that points to a fysics::detail::Body
+// instance in the World rigidbody pool.
 class Body {
 private:
   Vec2 _pos, _vel;
@@ -60,4 +65,4 @@ public:
   }
 };
 
-}
+} // namespace fysics::detail

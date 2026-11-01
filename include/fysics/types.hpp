@@ -1,7 +1,7 @@
 #pragma once
 
-#include <cstdint>
 #include "math.hpp"
+#include <cstdint>
 
 namespace fysics {
 
@@ -10,9 +10,9 @@ using WorldId = std::uint16_t;
 
 // unique identifier assigned to every fysics::Body
 struct BodyId {
-  std::uint32_t id;          // unique among loaded Bodies in a World
-  std::uint16_t generation;  // generation of object in pool
-  WorldId       world_id;    // identifier of World instance
+  std::uint32_t id;         // unique among loaded Bodies in a World
+  std::uint16_t generation; // generation of object in pool
+  WorldId world_id;         // identifier of World instance
 };
 
 // defines fysics::Body's behaviour in motion
@@ -36,9 +36,8 @@ struct BodyConfig {
   float mass = 1.0f;
 
   // rigidbody simulation type
-  SimulationType sim_type = SimulationType::Static;
+  SimulationType sim_type = SimulationType::Dynamic;
 };
-
 
 // maximum number of worlds that can be created
 inline constexpr std::size_t MAX_WORLDS = UINT16_MAX;
