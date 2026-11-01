@@ -1,25 +1,11 @@
 #include <memory>
-#include "fysics/fysics.hpp"
-#include "fysics/math.hpp"
 
-#include "body.hpp"
-#include "pool.hpp"
+#include "fysics/fysics.hpp"
+
+#include "detail/body.hpp"
+#include "detail/world_impl.hpp"
 
 namespace fysics {
-
-struct World::Impl {
-  // global counter for distinct world ids
-  inline static WorldId id_counter = 0;
-
-  // unique id for world instance
-  WorldId id = id_counter++;
-  Vec2 gravity;
-  
-  // object pool of fysics::detail::Body rigidbody instances
-  detail::Pool<detail::Body> body_pool;
-
-  Impl(const WorldConfig &config) : gravity{config.gravity} {}
-};
 
 World::World(const WorldConfig &config) : impl_(std::make_unique<Impl>(config)) {}
 

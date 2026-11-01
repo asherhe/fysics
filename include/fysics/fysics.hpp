@@ -44,12 +44,19 @@ public:
   void set_shape(const Shape &shape);
 };
 
+namespace detail {
+// internal bridge to enable access to World
+struct WorldImplAccess;
+} // namespace detail
+
 // physics world that manages simulation of all physics objects
 class World {
 private:
   // internal implementation of fysics::World - not publicly exposed
   struct Impl;
   std::unique_ptr<Impl> impl_;
+
+  friend struct detail::WorldImplAccess;
 
 public:
   explicit World(const WorldConfig &config);
