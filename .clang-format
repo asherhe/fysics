@@ -17,9 +17,15 @@ ReflowComments: true
 SortIncludes: CaseSensitive
 IncludeBlocks: Regroup
 IncludeCategories:
+  # catch2
+  - Regex: '^<catch2/.*>'
+    Priority: 2
+  # fysics
+  - Regex: '^["<]fysics/.*[">]'
+    Priority: 3
+  # c++ standard library
   - Regex: '^<.*>'
     Priority: 1
-  - Regex: '^"fysics/.*"'
-    Priority: 2
+  # all other
   - Regex: '.*'
-    Priority: 3
+    Priority: 4

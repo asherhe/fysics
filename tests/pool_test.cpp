@@ -2,7 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include "pool.hpp"
+#include "detail/pool.hpp"
 
 using fysics::detail::Pool;
 using IntPool = Pool<int>;
