@@ -1,5 +1,7 @@
 #include "detail/body.hpp"
 
+#include <stdexcept>
+
 #include "fysics/fysics.hpp"
 #include "fysics/types.hpp"
 
@@ -13,7 +15,10 @@ using fysics::detail::BodyImpl;
 using fysics::detail::WorldImplAccess;
 
 BodyImpl &get_body(BodyId id, World *world) {
-  return WorldImplAccess::get_impl(*world).body_pool.at({id.id, id.generation});
+  auto world_impl(WorldImplAccess::get_impl(*world));
+  if (world_impl.id != id.world_id)
+    throw std::invalid_argument("fysics::BodyId belongs to a different or invalid fysics::World");
+  return world_impl.body_pool.at({id.id, id.generation});
 }
 
 } // namespace

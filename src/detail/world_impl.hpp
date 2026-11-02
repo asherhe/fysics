@@ -2,6 +2,7 @@
 
 #include "fysics/fysics.hpp"
 #include "fysics/math.hpp"
+#include "fysics/types.hpp"
 
 #include "body.hpp"
 #include "contact.hpp"
@@ -15,7 +16,8 @@ struct detail::WorldImplAccess {
 
 struct World::Impl {
   // global counter for distinct world ids
-  inline static WorldId id_counter = 0;
+  // id 0 is reserved for invalid values
+  inline static WorldId id_counter = 1;
 
   // unique id for world instance
   WorldId id = id_counter++;
@@ -25,6 +27,9 @@ struct World::Impl {
   detail::Pool<detail::BodyImpl> body_pool;
 
   Impl(const WorldConfig &config) : gravity{config.gravity} {}
+
+  // whether a given WorldId matches the current world
+  bool is_id_valid(WorldId world_id) const;
 
   // advance simulation of velocities, accelerations
   void integrate(float dt);
