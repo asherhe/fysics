@@ -9,10 +9,10 @@ namespace {
 
 using fysics::BodyId;
 using fysics::World;
-using fysics::detail::Body;
+using fysics::detail::BodyImpl;
 using fysics::detail::WorldImplAccess;
 
-Body get_body(BodyId id, World *world) {
+BodyImpl &get_body(BodyId id, World *world) {
   return WorldImplAccess::get_impl(*world).body_pool.at({id.id, id.generation});
 }
 

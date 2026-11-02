@@ -5,7 +5,7 @@
 namespace fysics::detail {
 
 struct Contact {
-  Body *bodyA{}, *bodyB{};
+  BodyImpl *bodyA{}, *bodyB{};
 
   // world-space location of contact point
   Vec2 pos;

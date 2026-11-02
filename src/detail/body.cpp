@@ -6,7 +6,7 @@
 
 namespace fysics::detail {
 
-void Body::update_derived_fields() noexcept {
+void BodyImpl::update_derived_fields() noexcept {
   inv_mass_ = 1.0f / mass_;
   center_of_mass_ = std::visit([](auto &&shape) { return shape.center_of_mass(); }, shape_);
   Mat23 trans_com = Mat23({}, -center_of_mass_); // shift COM to origin

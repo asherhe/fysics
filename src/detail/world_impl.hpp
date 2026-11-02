@@ -21,8 +21,8 @@ struct World::Impl {
   WorldId id = id_counter++;
   Vec2 gravity;
 
-  // object pool of fysics::detail::Body rigidbody instances
-  detail::Pool<detail::Body> body_pool;
+  // object pool of fysics::detail::BodyImpl rigidbody instances
+  detail::Pool<detail::BodyImpl> body_pool;
 
   Impl(const WorldConfig &config) : gravity{config.gravity} {}
 

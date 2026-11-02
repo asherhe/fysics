@@ -7,18 +7,18 @@ namespace fysics::detail {
 
 // internal implementation of rigidbodies
 // since the lifecycle of bodies is controlled by the fysics::World, the user
-// should not have access to the underlying Body instance. instead, access is
-// provided with the fysics::Body wrapper that points to a fysics::detail::Body
+// should not have access to the underlying BodyImpl instance. instead, access is
+// provided with the fysics::Body wrapper that points to a fysics::detail::BodyImpl
 // instance in the World rigidbody pool.
-class Body {
+class BodyImpl {
 private:
   Vec2 pos_, vel_;
   float angle_, ang_vel_;
 
   // transforms between body <-> world space
-  // body space is defined to be the coordinate space of Body::shape_. note that Body::pos_ is
-  // anchored to the center of mass of the shape, so these transform matrices do not put world space
-  // pos_ at the body space origin.
+  // body space is defined to be the coordinate space of BodyImpl::shape_. note that BodyImpl::pos_
+  // is anchored to the center of mass of the shape, so these transform matrices do not put world
+  // space pos_ at the body space origin.
   Mat23 body2world_, world2body_;
 
   float mass_, inv_mass_;
@@ -30,7 +30,7 @@ private:
   void update_derived_fields() noexcept;
 
 public:
-  explicit Body(const BodyConfig &config)
+  explicit BodyImpl(const BodyConfig &config)
       : pos_{config.pos}, vel_{config.vel}, angle_{config.angle}, ang_vel_{config.ang_vel},
         mass_{config.mass}, sim_type_{config.sim_type}, shape_{config.shape} {
     update_derived_fields();
