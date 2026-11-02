@@ -4,6 +4,7 @@
 #include "fysics/math.hpp"
 
 #include "body.hpp"
+#include "contact.hpp"
 #include "pool.hpp"
 
 namespace fysics {
@@ -24,6 +25,13 @@ struct World::Impl {
   detail::Pool<detail::Body> body_pool;
 
   Impl(const WorldConfig &config) : gravity{config.gravity} {}
+
+  // advance simulation of velocities, accelerations
+  void integrate(float dt);
+  // determine pairs of fysics::Bodies that are in physical contact
+  std::vector<detail::Contact> detect_collisions();
+  // resolve contacts between fysics::Bodies by modifying their motion
+  void resolve_collisions(std::vector<detail::Contact> contacts);
 };
 
 } // namespace fysics

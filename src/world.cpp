@@ -22,4 +22,10 @@ void World::delete_body(BodyId id) {
   impl_->body_pool.erase({id.id, id.generation});
 }
 
+void World::step(float dt) {
+  impl_->integrate(dt);
+  auto contacts = impl_->detect_collisions();
+  impl_->resolve_collisions(contacts);
+}
+
 } // namespace fysics
