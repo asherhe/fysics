@@ -1,6 +1,11 @@
+#include <algorithm>
+#include <cstdlib>
 #include <variant>
 
 #include "fysics/types.hpp"
+
+using std::abs;
+using std::max;
 
 namespace fysics {
 
@@ -14,6 +19,8 @@ float CircleShape::moment_of_inertia() const {
   return 0.5f * radius * radius;
 }
 AABB CircleShape::aabb(Mat23 transform) const {
+  // TODO: assumes that transform is strictly orthonormal
+  // if we add rigidbody scaling, we may need to generalize
   Vec2 size = Vec2(radius, radius), pos = transform.translation;
   return AABB{pos - size, pos + size};
 }
@@ -24,9 +31,18 @@ Vec2 BoxShape::center_of_mass() const {
 float BoxShape::moment_of_inertia() const {
   return size.norm2() / 12.0f;
 }
-// TODO
 AABB BoxShape::aabb(Mat23 transform) const {
-  return AABB{};
+  Vec2 half_size = 0.5f * size;
+  Vec2 v0 = transform.transform_vector(half_size),
+       v1 = transform.transform_vector({half_size.x, -half_size.y});
+
+  Vec2 bounds = {
+    max(abs(v0.x), abs(v1.x)),
+    max(abs(v0.y), abs(v1.y))
+  };
+
+  Vec2 pos = transform.translation;
+  return AABB{pos - bounds, pos + bounds};
 }
 
 Vec2 shape_center_of_mass(const Shape &shape) {
