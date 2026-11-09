@@ -28,7 +28,7 @@ struct CircleShape {
 
 struct BoxShape {
   // {x, y} dimensions of box
-  Vec2 dimensions;
+  Vec2 size;
 
   Vec2 center_of_mass() const;
   float moment_of_inertia() const;
@@ -46,6 +46,12 @@ struct BoxShape {
 //   Vec2 center_of_mass() const;
 //   float moment_of_inertia() const;
 using Shape = std::variant<CircleShape, BoxShape>;
+
+// get position of shape center of mass, in shape's local space
+Vec2 shape_center_of_mass(const Shape &shape);
+// returns I/m, where I is moment of inertia and m is the mass of shape.
+// assumes that the Shape is of uniform density.
+float shape_moment_of_inertia(const Shape &shape);
 
 
 // defines fysics::Body's behaviour in motion
