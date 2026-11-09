@@ -3,8 +3,10 @@ add_library(fysics STATIC
   detail/body.hpp
   detail/contact.hpp
   detail/pool.hpp
+  detail/world_impl.cpp
   detail/world_impl.hpp
   body.cpp
+  shape.cpp
   world.cpp
 )
 

@@ -39,6 +39,12 @@ ctest --preset default
 
 Pass `-DFYSICS_BUILD_TESTS=OFF` at configure time to skip the tests and the Catch2 fetch.
 
+To generate a HTML test coverage report, ensure `gcovr` is installed, then build the fysics_coverage target:
+
+```sh
+cmake --build --preset default --target fysics_coverage
+```
+
 ## Running the demo
 
 ```sh

@@ -13,6 +13,9 @@
       "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_FLAGS": "--coverage -O0 -g",
+        "CMAKE_C_FLAGS": "--coverage -O0 -g",
+        "CMAKE_EXE_LINKER_FLAGS": "--coverage",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
         "FYSICS_BUILD_DEMO": "ON",
         "FYSICS_BUILD_TESTS": "ON"
