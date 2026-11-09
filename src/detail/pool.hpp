@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <iterator>
 #include <stdexcept>
 #include <vector>
 
@@ -74,6 +75,55 @@ public:
     return id.id < pool_.size() && !pool_[id.id].is_free &&
            pool_[id.id].generation == id.generation;
   }
+
+  // iterator too pool items. not guarenteed to be in insertion order
+  class Iterator {
+  public:
+    using iterator_category = std::forward_iterator_tag;
+    using value_type = T;
+    using difference_type = std::ptrdiff_t;
+    using pointer = T *;
+    using reference = T &;
+
+  private:
+    typename std::vector<Item>::iterator *ptr_, *end_;
+
+    explicit Iterator(
+        typename std::vector<Item>::iterator ptr, typename std::vector<Item>::iterator end
+    ) : ptr_(ptr), end_(end) {
+      skip_free();
+    }
+    friend class Pool;
+
+    void skip_free() {
+      // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+      for (; ptr_ != end_ && ptr_->is_free; ++ptr_)
+        ;
+    }
+
+  public:
+    reference operator*() const { return ptr_->val; }
+    pointer operator->() const { return ptr_->val; }
+
+    Iterator &operator++() {
+      // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+      ++ptr_;
+      skip_free();
+      return *this;
+    }
+
+    Iterator operator++(int) {
+      Iterator tmp = *this;
+      ++(*this);
+      return tmp;
+    }
+
+    friend bool operator==(const Iterator &a, const Iterator &b) { return a.ptr_ == b.ptr_; }
+    friend bool operator!=(const Iterator &a, const Iterator &b) { return !(a == b); }
+  };
+
+  Iterator begin() { return Iterator(pool_.begin(), pool_.end()); }
+  Iterator end() { return Iterator(pool_.end(), pool_.end()); }
 };
 
 } // namespace fysics::detail
