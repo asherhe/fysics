@@ -48,6 +48,9 @@ public:
   // apply a torque onto the body
   void add_torque(float torque) noexcept;
 
+  // advance body simulation by dt seconds
+  void integrate(float dt) noexcept;
+
   Vec2 get_pos() const noexcept { return pos_; }
   void set_pos(const Vec2 &pos) noexcept {
     pos_ = pos;
