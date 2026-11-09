@@ -19,11 +19,18 @@ struct BodyId {
 };
 
 
+// axis-aligned bounding box
+struct AABB {
+  Vec2 min, max;
+};
+
+
 struct CircleShape {
   float radius;
 
   Vec2 center_of_mass() const;
   float moment_of_inertia() const;
+  AABB aabb(Mat23 transform) const;
 };
 
 struct BoxShape {
@@ -32,6 +39,7 @@ struct BoxShape {
 
   Vec2 center_of_mass() const;
   float moment_of_inertia() const;
+  AABB aabb(Mat23 transform) const;
 };
 
 // describes the geometry of a fysics::Body. carries no information about the
@@ -52,6 +60,9 @@ Vec2 shape_center_of_mass(const Shape &shape);
 // returns I/m, where I is moment of inertia and m is the mass of shape.
 // assumes that the Shape is of uniform density.
 float shape_moment_of_inertia(const Shape &shape);
+// determine axis-aligned bounding box after the shape experiences a
+// transformation. assume that transform is an orthonormal transform
+AABB shape_aabb(const Shape &shape, Mat23 transform);
 
 
 // defines fysics::Body's behaviour in motion

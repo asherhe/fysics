@@ -3,6 +3,8 @@
 #include "fysics/math.hpp"
 #include "fysics/types.hpp"
 
+#include "aabb.hpp"
+
 namespace fysics::detail {
 
 // internal implementation of rigidbodies
@@ -27,13 +29,14 @@ private:
 
   Shape shape_;
   Vec2 center_of_mass_; // center of mass in shape_ space
+  AABB world_aabb_;     // bounding box in world space
 
   void update_derived_fields() noexcept;
 
 public:
-  explicit BodyImpl(const BodyConfig &config)
-      : pos_{config.pos}, vel_{config.vel}, angle_{config.angle}, ang_vel_{config.ang_vel},
-        mass_{config.mass}, sim_type_{config.sim_type}, shape_{config.shape} {
+  explicit BodyImpl(const BodyConfig &config) :
+      pos_{config.pos}, vel_{config.vel}, angle_{config.angle}, ang_vel_{config.ang_vel},
+      mass_{config.mass}, sim_type_{config.sim_type}, shape_{config.shape} {
     update_derived_fields();
   }
 
