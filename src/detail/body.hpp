@@ -22,6 +22,7 @@ private:
   Mat23 body2world_, world2body_;
 
   float mass_, inv_mass_;
+  float inertia_, inv_inertia_;
   SimulationType sim_type_;
 
   Shape shape_;
