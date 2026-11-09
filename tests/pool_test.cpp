@@ -117,3 +117,41 @@ TEST_CASE("Pool on an empty pool has no valid ids", "[pool]") {
   const IntPool pool;
   REQUIRE_FALSE(pool.is_valid(IntPool::Id{0, 0}));
 }
+
+TEST_CASE("Pool::Iterator handles preincrement and postincrement", "[pool]") {
+  IntPool pool;
+  for (int i = 0; i < 8; ++i)
+    pool.add(i);
+
+  auto it = pool.begin();
+  REQUIRE(*it == 0);
+  REQUIRE(*(++it) == 1);
+  REQUIRE(*(it++) == 1);
+  REQUIRE(*it == 2);
+}
+
+TEST_CASE("Pool::Iterator skips free items", "[pool]") {
+  IntPool pool;
+  IntPool::Id ids[8];
+  for (int i = 0; i < 8; ++i)
+    ids[i] = pool.add(i);
+  pool.erase(ids[0]);
+  pool.erase(ids[2]);
+  pool.erase(ids[3]);
+
+  auto it = pool.begin();
+  REQUIRE(*it == 1);
+  REQUIRE(*(++it) == 4);
+  REQUIRE(*(++it) == 5);
+}
+
+TEST_CASE("Pool::Iterator correctly compares iterators", "[pool]") {
+  IntPool pool;
+  for (int i = 0; i < 8; ++i)
+    pool.add(i);
+
+  REQUIRE(++(++pool.begin()) == ++(++pool.begin()));
+  REQUIRE(pool.end() == pool.end());
+  REQUIRE(pool.begin() != pool.end());
+}
+

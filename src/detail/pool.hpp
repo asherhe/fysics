@@ -86,7 +86,7 @@ public:
     using reference = T &;
 
   private:
-    typename std::vector<Item>::iterator *ptr_, *end_;
+    typename std::vector<Item>::iterator ptr_, end_;
 
     explicit Iterator(
         typename std::vector<Item>::iterator ptr, typename std::vector<Item>::iterator end
