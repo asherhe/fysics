@@ -23,6 +23,7 @@ struct CircleShape {
   float radius;
 
   Vec2 center_of_mass() const;
+  float moment_of_inertia() const;
 };
 
 struct BoxShape {
@@ -30,6 +31,7 @@ struct BoxShape {
   Vec2 dimensions;
 
   Vec2 center_of_mass() const;
+  float moment_of_inertia() const;
 };
 
 // describes the geometry of a fysics::Body. carries no information about the
@@ -38,6 +40,11 @@ struct BoxShape {
 // internally, fysics::Shape uses std::variant to discriminate between Shape
 // subtypes (e.g. CircleShape, BoxShape, etc.), so that all the options can be
 // encoded into one value.
+//
+// all types in Shape MUST implement:
+//
+//   Vec2 center_of_mass() const;
+//   float moment_of_inertia() const;
 using Shape = std::variant<CircleShape, BoxShape>;
 
 
