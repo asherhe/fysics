@@ -3,8 +3,6 @@
 #include "fysics/math.hpp"
 #include "fysics/types.hpp"
 
-#include "aabb.hpp"
-
 namespace fysics::detail {
 
 // internal implementation of rigidbodies

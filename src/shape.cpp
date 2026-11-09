@@ -36,10 +36,7 @@ AABB BoxShape::aabb(Mat23 transform) const {
   Vec2 v0 = transform.transform_vector(half_size),
        v1 = transform.transform_vector({half_size.x, -half_size.y});
 
-  Vec2 bounds = {
-    max(abs(v0.x), abs(v1.x)),
-    max(abs(v0.y), abs(v1.y))
-  };
+  Vec2 bounds = {max(abs(v0.x), abs(v1.x)), max(abs(v0.y), abs(v1.y))};
 
   Vec2 pos = transform.translation;
   return AABB{pos - bounds, pos + bounds};
