@@ -51,7 +51,7 @@ TEST_CASE("Body setters update state through the World interface", "[world][body
   body.set_angle(0.75f);
   body.set_ang_vel(1.5f);
   body.set_mass(4.0f);
-  body.set_sim_type(SimulationType::Static);
+  body.set_sim_type(SimulationType::Dynamic);
   body.set_shape(BoxShape{{6.0f, 4.0f}});
 
   REQUIRE(body.get_pos().x == -1.0f);
@@ -61,7 +61,7 @@ TEST_CASE("Body setters update state through the World interface", "[world][body
   REQUIRE(body.get_angle() == 0.75f);
   REQUIRE(body.get_ang_vel() == 1.5f);
   REQUIRE(body.get_mass() == 4.0f);
-  REQUIRE(body.get_sim_type() == SimulationType::Static);
+  REQUIRE(body.get_sim_type() == SimulationType::Dynamic);
   REQUIRE(std::holds_alternative<BoxShape>(body.get_shape()));
   const auto size = std::get<BoxShape>(body.get_shape()).size;
   REQUIRE(size.x == 6.0f);
@@ -96,13 +96,13 @@ TEST_CASE("Body access rejects ids from another World", "[world][validation]") {
   REQUIRE_THROWS_AS(second.get_body(body.id()).get_pos(), std::invalid_argument);
 }
 
-TEST_CASE("World stepping completes without contacts", "[world][step]") {
+TEST_CASE("World stepping moves bodies correctly", "[world][step]") {
   World world{WorldConfig{}};
   auto body = world.create_body(configured_body());
 
   world.step(0.0f);
   world.step(1.0f);
 
-  REQUIRE(body.get_pos().x == 1.0f);
-  REQUIRE(body.get_vel().y == 4.0f);
+  REQUIRE(body.get_pos().x == 4.0f);
+  REQUIRE(body.get_angle() == -0.25f);
 }
