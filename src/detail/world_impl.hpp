@@ -36,7 +36,7 @@ struct World::Impl {
   // determine pairs of fysics::Bodies that are in physical contact
   std::vector<detail::Contact> detect_collisions();
   // resolve contacts between fysics::Bodies by modifying their motion
-  void resolve_collisions(std::vector<detail::Contact> contacts);
+  void resolve_collisions(const std::vector<detail::Contact> contacts);
 };
 
 } // namespace fysics
