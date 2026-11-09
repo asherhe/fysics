@@ -25,9 +25,12 @@ if(GCOVR_PATH)
         COMMAND ${GCOVR_PATH} 
             --root ${CMAKE_SOURCE_DIR} 
             --filter ${CMAKE_SOURCE_DIR}/src/ 
+            --filter ${CMAKE_SOURCE_DIR}/include/
             --html-details ${CMAKE_BINARY_DIR}/coverage/index.html
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     )
+    add_dependencies(fysics_coverage fysics)
+    add_dependencies(fysics_coverage fysics_tests)
     message(STATUS "Added 'fysics_coverage' target to tests directory")
 endif()
 
