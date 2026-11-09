@@ -59,6 +59,16 @@ float Body::get_mass() const {
 void Body::set_mass(float mass) {
   get_body(id_, world_).set_mass(mass);
 }
+float Body::get_inv_mass() const {
+  return get_body(id_, world_).get_inv_mass();
+}
+
+float Body::get_inertia() const {
+  return get_body(id_, world_).get_inertia();
+}
+float Body::get_inv_inertia() const {
+  return get_body(id_, world_).get_inv_inertia();
+}
 
 SimulationType Body::get_sim_type() const {
   return get_body(id_, world_).get_sim_type();
@@ -72,6 +82,14 @@ Shape Body::get_shape() const {
 }
 void Body::set_shape(const Shape &shape) {
   get_body(id_, world_).set_shape(shape);
+}
+
+Vec2 Body::get_center_of_mass() const {
+  return get_body(id_, world_).get_center_of_mass();
+}
+
+AABB Body::get_world_aabb() const {
+  return get_body(id_, world_).get_world_aabb();
 }
 
 } // namespace fysics

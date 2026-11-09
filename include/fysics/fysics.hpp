@@ -36,12 +36,19 @@ public:
 
   float get_mass() const;
   void set_mass(float mass);
+  float get_inv_mass() const;
+
+  float get_inertia() const;
+  float get_inv_inertia() const;
 
   SimulationType get_sim_type() const;
   void set_sim_type(SimulationType sim_type);
 
   Shape get_shape() const;
   void set_shape(const Shape &shape);
+
+  Vec2 get_center_of_mass() const;
+  AABB get_world_aabb() const;
 };
 
 namespace detail {

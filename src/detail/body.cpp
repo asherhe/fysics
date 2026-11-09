@@ -6,9 +6,14 @@
 namespace fysics::detail {
 
 void BodyImpl::update_derived_fields() noexcept {
-  inv_mass_ = 1.0f / mass_;
-  inertia_ = shape_moment_of_inertia(shape_);
-  inv_inertia_ = 1.0f / inertia_;
+  if (sim_type_ == SimulationType::Static) {
+    mass_ = inv_mass_ = 0.0f;
+    inertia_ = inv_inertia_ = 0.0f;
+  } else {
+    inv_mass_ = 1.0f / mass_;
+    inertia_ = mass_ * shape_moment_of_inertia(shape_);
+    inv_inertia_ = 1.0f / inertia_;
+  }
   center_of_mass_ = shape_center_of_mass(shape_);
 
   Mat23 trans_com = Mat23({}, -center_of_mass_);        // shift COM to origin

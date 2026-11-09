@@ -67,6 +67,10 @@ public:
     mass_ = mass;
     update_derived_fields();
   }
+  float get_inv_mass() const noexcept { return inv_mass_; }
+
+  float get_inertia() const noexcept { return inertia_; }
+  float get_inv_inertia() const noexcept { return inv_inertia_; }
 
   SimulationType get_sim_type() const noexcept { return sim_type_; }
   void set_sim_type(SimulationType sim_type) noexcept {
@@ -79,6 +83,10 @@ public:
     shape_ = shape;
     update_derived_fields();
   }
+
+  Vec2 get_center_of_mass() const noexcept { return center_of_mass_; }
+
+  AABB get_world_aabb() const noexcept { return world_aabb_; }
 };
 
 } // namespace fysics::detail
