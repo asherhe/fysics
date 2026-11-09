@@ -61,6 +61,13 @@ private:
 public:
   explicit World(const WorldConfig &config);
 
+  World(const World &world) = delete;
+  World &operator=(const World &world) = delete;
+
+  World(World &&world) noexcept;
+  World &operator=(World &&world) noexcept;
+  ~World();
+
   // instantiate a new fysics::Body in the physics world
   Body create_body(const BodyConfig &config);
   Body get_body(BodyId id);
