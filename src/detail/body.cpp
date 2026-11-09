@@ -24,4 +24,16 @@ void BodyImpl::update_derived_fields() noexcept {
   world_aabb_ = shape_aabb(shape_, body2world_);
 }
 
+void BodyImpl::add_force(Vec2 force, Vec2 pos) noexcept {
+  acc_accum_ += force * inv_mass_;
+  ang_acc_accum_ += force.cross(pos) * inv_inertia_;
+}
+void BodyImpl::add_torque(float torque) noexcept {
+  ang_acc_accum_ += torque * inv_inertia_;
+}
+void BodyImpl::reset_accum() noexcept {
+  acc_accum_ = {0.0f, 0.0f};
+  ang_acc_accum_ = 0.0f;
+}
+
 } // namespace fysics::detail

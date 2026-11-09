@@ -1,5 +1,6 @@
 #pragma once
 
+#include "fysics/fysics.hpp"
 #include "fysics/math.hpp"
 #include "fysics/types.hpp"
 
@@ -21,8 +22,8 @@ private:
   // space pos_ at the body space origin.
   Mat23 body2world_, world2body_;
 
-  float mass_, inv_mass_;
-  float inertia_, inv_inertia_;
+  float mass_, inv_mass_{};
+  float inertia_{}, inv_inertia_{};
   SimulationType sim_type_;
 
   Shape shape_;
@@ -31,12 +32,21 @@ private:
 
   void update_derived_fields() noexcept;
 
+  Vec2 acc_accum_;
+  float ang_acc_accum_{};
+
 public:
   explicit BodyImpl(const BodyConfig &config) :
       pos_{config.pos}, vel_{config.vel}, angle_{config.angle}, ang_vel_{config.ang_vel},
       mass_{config.mass}, sim_type_{config.sim_type}, shape_{config.shape} {
     update_derived_fields();
   }
+
+  // apply a force onto the body, with an optional location of application
+  // pos is the world space displacement from the center of mass
+  void add_force(Vec2 force, Vec2 pos = {0.0f, 0.0f}) noexcept;
+  // apply a torque onto the body
+  void add_torque(float torque) noexcept;
 
   Vec2 get_pos() const noexcept { return pos_; }
   void set_pos(const Vec2 &pos) noexcept {
