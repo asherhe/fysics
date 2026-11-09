@@ -15,7 +15,7 @@ using fysics::detail::BodyImpl;
 using fysics::detail::WorldImplAccess;
 
 BodyImpl &get_body(BodyId id, World *world) {
-  auto world_impl(WorldImplAccess::get_impl(*world));
+  auto &world_impl(WorldImplAccess::get_impl(*world));
   if (world_impl.id != id.world_id)
     throw std::invalid_argument("fysics::BodyId belongs to a different or invalid fysics::World");
   return world_impl.body_pool.at({id.id, id.generation});
