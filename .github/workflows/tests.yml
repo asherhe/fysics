@@ -1,0 +1,30 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build
+
+      - name: Configure
+        # the demo builds SDL3 which requires additional dependencies
+        # we don't need this for testing so we disable the demo
+        run: cmake --preset default -DFYSICS_BUILD_DEMO=OFF
+
+      - name: Build
+        run: cmake --build --preset default
+
+      - name: Run tests
+        run: ctest --preset default

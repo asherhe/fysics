@@ -1,0 +1,8 @@
+InheritParentConfig: true
+
+# Catch2 macros expand to do/while loops, static registrars, and long test bodies
+Checks: >
+  -cppcoreguidelines-avoid-do-while,
+  -cppcoreguidelines-avoid-non-const-global-variables,
+  -readability-function-cognitive-complexity,
+  -readability-function-size

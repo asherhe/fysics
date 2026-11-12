@@ -1,0 +1,105 @@
+#pragma once
+
+#include "fysics/fysics.hpp"
+#include "fysics/math.hpp"
+#include "fysics/types.hpp"
+
+namespace fysics::detail {
+
+// internal implementation of rigidbodies
+// since the lifecycle of bodies is controlled by the fysics::World, the user
+// should not have access to the underlying BodyImpl instance. instead, access is
+// provided with the fysics::Body wrapper that points to a fysics::detail::BodyImpl
+// instance in the World rigidbody pool.
+class BodyImpl {
+private:
+  Vec2 pos_, vel_;
+  float angle_, ang_vel_;
+
+  // transforms between body <-> world space
+  // body space is defined to be the coordinate space of BodyImpl::shape_. note that BodyImpl::pos_
+  // is anchored to the center of mass of the shape, so these transform matrices do not put world
+  // space pos_ at the body space origin.
+  Mat23 body2world_, world2body_;
+
+  float mass_, inv_mass_{};
+  float inertia_{}, inv_inertia_{};
+  SimulationType sim_type_;
+
+  Shape shape_;
+  Vec2 center_of_mass_; // center of mass in shape_ space
+  AABB world_aabb_;     // bounding box in world space
+
+  void update_derived_fields() noexcept;
+
+  Vec2 acc_accum_;
+  float ang_acc_accum_{};
+
+public:
+  explicit BodyImpl(const BodyConfig &config) :
+      pos_{config.pos}, vel_{config.vel}, angle_{config.angle}, ang_vel_{config.ang_vel},
+      mass_{config.mass}, sim_type_{config.sim_type}, shape_{config.shape} {
+    update_derived_fields();
+  }
+
+  // apply a force onto the body, with an optional location of application
+  // pos is the world space displacement from the center of mass
+  void add_force(Vec2 force, Vec2 pos = {0.0f, 0.0f}) noexcept;
+  // apply a torque onto the body
+  void add_torque(float torque) noexcept;
+
+  // advance body simulation by dt seconds
+  void integrate(float dt) noexcept;
+
+  Vec2 get_pos() const noexcept { return pos_; }
+  void set_pos(const Vec2 &pos) noexcept {
+    pos_ = pos;
+    update_derived_fields();
+  }
+
+  Vec2 get_vel() const noexcept { return vel_; }
+  void set_vel(const Vec2 &vel) noexcept {
+    vel_ = vel;
+    update_derived_fields();
+  }
+
+  float get_angle() const noexcept { return angle_; }
+  void set_angle(float angle) noexcept {
+    angle_ = angle;
+    update_derived_fields();
+  }
+
+  float get_ang_vel() const noexcept { return ang_vel_; }
+  void set_ang_vel(float ang_vel) noexcept {
+    ang_vel_ = ang_vel;
+    update_derived_fields();
+  }
+
+  float get_mass() const noexcept { return mass_; }
+  void set_mass(float mass) noexcept {
+    mass_ = mass;
+    update_derived_fields();
+  }
+  float get_inv_mass() const noexcept { return inv_mass_; }
+
+  float get_inertia() const noexcept { return inertia_; }
+  float get_inv_inertia() const noexcept { return inv_inertia_; }
+
+  SimulationType get_sim_type() const noexcept { return sim_type_; }
+  void set_sim_type(SimulationType sim_type) noexcept {
+    sim_type_ = sim_type;
+    update_derived_fields();
+  }
+
+  Shape get_shape() const noexcept { return shape_; }
+  void set_shape(const Shape &shape) noexcept {
+    shape_ = shape;
+    update_derived_fields();
+  }
+
+  Vec2 get_center_of_mass() const noexcept { return center_of_mass_; }
+
+  AABB get_world_aabb() const noexcept { return world_aabb_; }
+};
+
+} // namespace fysics::detail

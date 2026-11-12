@@ -1,0 +1,104 @@
+#pragma once
+
+#include <cstdint>
+#include <variant>
+
+#include "fysics/math.hpp"
+
+namespace fysics {
+
+// unique identifier assigned to every fysics::World
+using Generation = std::uint16_t;
+using WorldId = std::uint16_t;
+
+// unique identifier assigned to every fysics::Body
+struct BodyId {
+  std::uint32_t id;      // unique among loaded Bodies in a World
+  Generation generation; // generation of object in pool
+  WorldId world_id;      // identifier of World instance
+};
+
+
+// axis-aligned bounding box
+struct AABB {
+  Vec2 min, max;
+};
+
+
+struct CircleShape {
+  float radius;
+
+  Vec2 center_of_mass() const;
+  float moment_of_inertia() const;
+  AABB aabb(Mat23 transform) const;
+};
+
+struct BoxShape {
+  // {x, y} dimensions of box
+  Vec2 size;
+
+  Vec2 center_of_mass() const;
+  float moment_of_inertia() const;
+  AABB aabb(Mat23 transform) const;
+};
+
+// describes the geometry of a fysics::Body. carries no information about the
+// location of the shape in world space, only a definition of the body's shape.
+//
+// internally, fysics::Shape uses std::variant to discriminate between Shape
+// subtypes (e.g. CircleShape, BoxShape, etc.), so that all the options can be
+// encoded into one value.
+//
+// all types in Shape MUST implement:
+//
+//   Vec2 center_of_mass() const;
+//   float moment_of_inertia() const;
+using Shape = std::variant<CircleShape, BoxShape>;
+
+// get position of shape center of mass, in shape's local space
+Vec2 shape_center_of_mass(const Shape &shape);
+// returns I/m, where I is moment of inertia and m is the mass of shape.
+// assumes that the Shape is of uniform density.
+float shape_moment_of_inertia(const Shape &shape);
+// determine axis-aligned bounding box after the shape experiences a
+// transformation. assume that transform is an orthonormal transform
+AABB shape_aabb(const Shape &shape, Mat23 transform);
+
+
+// defines fysics::Body's behaviour in motion
+//   SimulationType::Static  - position, orientation fixed in place
+//   SimulationType::Dynamic - full simulation of collision response
+enum class SimulationType : std::uint8_t { Static, Dynamic };
+
+// configuration for creating a fysics::Body
+struct BodyConfig {
+  // position, m
+  Vec2 pos{0.0f, 0.0f};
+  // velocity, m/s
+  Vec2 vel{0.0f, 0.0f};
+
+  // angle, rad
+  float angle = 0.0f;
+  // angular velocity, rad/s
+  float ang_vel = 0.0f;
+
+  // mass, kg
+  float mass = 1.0f;
+
+  // rigidbody simulation type
+  SimulationType sim_type = SimulationType::Dynamic;
+
+  // collider geometry of body
+  Shape shape;
+};
+
+
+// maximum number of worlds that can be created
+inline constexpr std::size_t MAX_WORLDS = UINT16_MAX;
+
+// configuration for creating a fysics::World
+struct WorldConfig {
+  Vec2 gravity{0.0f, -9.8f};
+};
+
+} // namespace fysics
