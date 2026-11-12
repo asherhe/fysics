@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <ostream>
 
 namespace fysics {
 
@@ -57,6 +58,10 @@ struct Vec2 {
     if (n == 0.0f)
       return {};
     return {x / n, y / n};
+  }
+
+  friend std::ostream &operator<<(std::ostream &out, const Vec2 &v) {
+    return out << "(" << v.x << "," << v.y << ")";
   }
 };
 
@@ -165,8 +170,8 @@ struct Mat23 {
 
   // identity
   constexpr Mat23() = default;
-  constexpr Mat23(const Mat22 &linear, const Vec2 &translation)
-      : linear{linear}, translation{translation} {}
+  constexpr Mat23(const Mat22 &linear, const Vec2 &translation) :
+      linear{linear}, translation{translation} {}
 
   static constexpr Mat23 identity() { return {}; }
 
