@@ -26,9 +26,11 @@ void World::delete_body(BodyId id) {
 }
 
 void World::step(float dt) {
-  impl_->integrate(dt);
-  auto contacts = impl_->detect_collisions();
-  impl_->resolve_collisions(contacts);
+  impl_->step(dt);
+}
+
+float World::get_time() noexcept {
+  return impl_->time;
 }
 
 } // namespace fysics

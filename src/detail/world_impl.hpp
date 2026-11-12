@@ -23,6 +23,8 @@ struct World::Impl {
   WorldId id = id_counter++;
   Vec2 gravity;
 
+  float time = 0.0f;
+
   // object pool of fysics::detail::BodyImpl rigidbody instances
   detail::Pool<detail::BodyImpl> body_pool;
 
@@ -31,6 +33,7 @@ struct World::Impl {
   // whether a given WorldId matches the current world
   bool is_id_valid(WorldId world_id) const;
 
+  void step(float dt);
   // advance simulation of velocities, accelerations
   void integrate(float dt);
   // determine pairs of fysics::Bodies that are in physical contact

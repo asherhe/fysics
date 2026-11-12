@@ -82,6 +82,8 @@ public:
 
   // advance physics simulation by dt seconds
   void step(float dt);
+
+  float get_time() noexcept;
 };
 
 } // namespace fysics
