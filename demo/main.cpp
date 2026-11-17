@@ -10,7 +10,7 @@
 #include "imgui.h"
 #include "imgui_impl_sdl3.h"
 #include "imgui_impl_sdlrenderer3.h"
-#include "scene.hpp"
+#include "playback.hpp"
 
 namespace {
 
@@ -72,23 +72,31 @@ public:
     return true;
   }
 
-  int run(demo::Scene &scene) {
+  int run(demo::Playback &playback) {
     const SDL_WindowID window_id = SDL_GetWindowID(window_);
+    Uint64 previous_frame = SDL_GetTicksNS();
     for (;;) {
-      const Uint64 frame_start = SDL_GetTicksNS();
       SDL_Event event;
       while (SDL_PollEvent(&event)) {
         ImGui_ImplSDL3_ProcessEvent(&event);
         if (event.type == SDL_EVENT_QUIT ||
             (event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED && event.window.windowID == window_id))
           return EXIT_SUCCESS;
+        if ((event.type == SDL_EVENT_WINDOW_MINIMIZED || event.type == SDL_EVENT_WINDOW_RESTORED) &&
+            event.window.windowID == window_id)
+          playback.discard_elapsed();
       }
 
+      const Uint64 frame_start = SDL_GetTicksNS();
+      const double elapsed_seconds =
+          static_cast<double>(frame_start - previous_frame) / SDL_NS_PER_SECOND;
+      previous_frame = frame_start;
       if (SDL_GetWindowFlags(window_) & SDL_WINDOW_MINIMIZED) {
+        playback.discard_elapsed();
         SDL_Delay(16);
         continue;
       }
-      if (!render(scene))
+      if (!render(playback, elapsed_seconds))
         return EXIT_FAILURE;
 
       constexpr Uint64 frame_duration = SDL_NS_PER_SECOND / 60;
@@ -118,11 +126,45 @@ private:
     draw.PopClipRect();
   }
 
-  bool render(demo::Scene &scene) {
+  static float
+  draw_toolbar(demo::Playback &playback, const ImGuiViewport &viewport, double elapsed_seconds) {
+    const auto &style = ImGui::GetStyle();
+    const float height = ImGui::GetFrameHeight() + 2.0f * style.WindowPadding.y;
+    ImGui::SetNextWindowPos(viewport.Pos);
+    ImGui::SetNextWindowSize({viewport.Size.x, height});
+    constexpr ImGuiWindowFlags flags =
+        ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
+    if (ImGui::Begin("Playback", nullptr, flags)) {
+      const float button_width = ImGui::CalcTextSize("Resume").x + 2.0f * style.FramePadding.x;
+      if (ImGui::Button(
+              playback.paused() ? "Resume###playback" : "Pause###playback", {button_width, 0.0f}
+          ))
+        playback.toggle_pause();
+      ImGui::SameLine();
+      ImGui::BeginDisabled(!playback.paused());
+      if (ImGui::Button("Step"))
+        playback.step_once();
+      ImGui::EndDisabled();
+      ImGui::SameLine();
+      if (ImGui::Button("Reset"))
+        playback.reset();
+      playback.advance(elapsed_seconds);
+      ImGui::SameLine();
+      ImGui::AlignTextToFramePadding();
+      ImGui::Text("%.5f s", playback.scene().world.get_time());
+    } else {
+      playback.advance(elapsed_seconds);
+    }
+    ImGui::End();
+    return height;
+  }
+
+  bool render(demo::Playback &playback, double elapsed_seconds) {
     ImGui_ImplSDLRenderer3_NewFrame();
     ImGui_ImplSDL3_NewFrame();
     const auto &io = ImGui::GetIO();
     if (io.DisplaySize.x <= 0.0f || io.DisplaySize.y <= 0.0f) {
+      playback.discard_elapsed();
       SDL_Delay(16);
       return true;
     }
@@ -130,11 +172,18 @@ private:
     const float scale = SDL_GetWindowDisplayScale(window_);
     const float density = SDL_GetWindowPixelDensity(window_);
     const float logical_scale = scale > 0.0f && density > 0.0f ? scale / density : 1.0f;
+    ImGui::GetStyle().FontScaleDpi = logical_scale;
     ImGui::NewFrame();
     const auto *viewport = ImGui::GetMainViewport();
-    draw_scene(
-        scene, *ImGui::GetBackgroundDrawList(), viewport->Pos, viewport->Size, 48.0f * logical_scale
-    );
+    const float toolbar_height = draw_toolbar(playback, *viewport, elapsed_seconds);
+    if (viewport->Size.y > toolbar_height)
+      draw_scene(
+          playback.scene(),
+          *ImGui::GetBackgroundDrawList(),
+          {viewport->Pos.x, viewport->Pos.y + toolbar_height},
+          {viewport->Size.x, viewport->Size.y - toolbar_height},
+          48.0f * logical_scale
+      );
     ImGui::Render();
 
     if (!SDL_SetRenderScale(renderer_, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y))
@@ -162,8 +211,8 @@ int main(int, char **) {
     Frontend frontend;
     if (!frontend.init())
       return EXIT_FAILURE;
-    auto scene = demo::make_two_circle_scene();
-    return frontend.run(scene);
+    demo::Playback playback{demo::make_two_circle_scene};
+    return frontend.run(playback);
   } catch (const std::exception &error) {
     SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Fysics demo failed: %s", error.what());
     return EXIT_FAILURE;
