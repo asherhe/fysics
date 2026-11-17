@@ -1,5 +1,7 @@
+#include <algorithm>
 #include <array>
 #include <cstddef>
+#include <cstdio>
 #include <cstdlib>
 #include <exception>
 #include <variant>
@@ -107,6 +109,28 @@ public:
   }
 
 private:
+  void update_style(float scale) {
+    if (scale == style_scale_)
+      return;
+
+    ImGuiStyle style;
+    ImGui::StyleColorsDark(&style);
+    style.WindowPadding = {12.0f, 8.0f};
+    style.FramePadding = {10.0f, 5.0f};
+    style.ItemSpacing = {8.0f, 6.0f};
+    style.FrameRounding = 4.0f;
+    style.Colors[ImGuiCol_WindowBg] = {0.10f, 0.09f, 0.17f, 1.0f};
+    style.Colors[ImGuiCol_Border] = {0.24f, 0.22f, 0.35f, 1.0f};
+    style.Colors[ImGuiCol_Text] = {0.94f, 0.93f, 0.98f, 1.0f};
+    style.Colors[ImGuiCol_Button] = {0.20f, 0.18f, 0.30f, 1.0f};
+    style.Colors[ImGuiCol_ButtonHovered] = {0.29f, 0.26f, 0.42f, 1.0f};
+    style.Colors[ImGuiCol_ButtonActive] = {0.35f, 0.31f, 0.49f, 1.0f};
+    style.ScaleAllSizes(scale);
+    style.FontScaleDpi = scale;
+    ImGui::GetStyle() = style;
+    style_scale_ = scale;
+  }
+
   static void draw_scene(
       demo::Scene &scene, ImDrawList &draw, ImVec2 origin, ImVec2 size, float pixels_per_unit
   ) {
@@ -129,16 +153,30 @@ private:
   static float
   draw_toolbar(demo::Playback &playback, const ImGuiViewport &viewport, double elapsed_seconds) {
     const auto &style = ImGui::GetStyle();
-    const float height = ImGui::GetFrameHeight() + 2.0f * style.WindowPadding.y;
+    const float button_width = ImGui::CalcTextSize("Resume").x + 2.0f * style.FramePadding.x;
+    const float controls_width = button_width + ImGui::CalcTextSize("Step").x +
+                                 ImGui::CalcTextSize("Reset").x + 4.0f * style.FramePadding.x +
+                                 2.0f * style.ItemSpacing.x;
+    const float time_width = ImGui::CalcTextSize("00000.00000 s").x;
+    const float content_width = viewport.Size.x - 2.0f * style.WindowPadding.x;
+    const bool time_on_next_row = content_width < controls_width + style.ItemSpacing.x + time_width;
+    const float frame_height = ImGui::GetFrameHeight();
+    const float height = frame_height + 2.0f * style.WindowPadding.y +
+                         (time_on_next_row ? frame_height + style.ItemSpacing.y : 0.0f);
     ImGui::SetNextWindowPos(viewport.Pos);
     ImGui::SetNextWindowSize({viewport.Size.x, height});
     constexpr ImGuiWindowFlags flags =
         ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
     if (ImGui::Begin("Playback", nullptr, flags)) {
-      const float button_width = ImGui::CalcTextSize("Resume").x + 2.0f * style.FramePadding.x;
-      if (ImGui::Button(
-              playback.paused() ? "Resume###playback" : "Pause###playback", {button_width, 0.0f}
-          ))
+      ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0x18, 0x22, 0x12, 255));
+      ImGui::PushStyleColor(ImGuiCol_Button, IM_COL32(0xac, 0xff, 0x51, 255));
+      ImGui::PushStyleColor(ImGuiCol_ButtonHovered, IM_COL32(0xc5, 0xff, 0x85, 255));
+      ImGui::PushStyleColor(ImGuiCol_ButtonActive, IM_COL32(0x96, 0xe8, 0x3c, 255));
+      const bool toggle = ImGui::Button(
+          playback.paused() ? "Resume###playback" : "Pause###playback", {button_width, 0.0f}
+      );
+      ImGui::PopStyleColor(4);
+      if (toggle)
         playback.toggle_pause();
       ImGui::SameLine();
       ImGui::BeginDisabled(!playback.paused());
@@ -149,9 +187,15 @@ private:
       if (ImGui::Button("Reset"))
         playback.reset();
       playback.advance(elapsed_seconds);
-      ImGui::SameLine();
+      if (!time_on_next_row)
+        ImGui::SameLine();
+      char time[48];
+      std::snprintf(time, sizeof(time), "%.5f s", playback.scene().world.get_time());
+      const float right_aligned_x =
+          viewport.Size.x - style.WindowPadding.x - ImGui::CalcTextSize(time).x;
+      ImGui::SetCursorPosX(std::max(ImGui::GetCursorPosX(), right_aligned_x));
       ImGui::AlignTextToFramePadding();
-      ImGui::Text("%.5f s", playback.scene().world.get_time());
+      ImGui::TextUnformatted(time);
     } else {
       playback.advance(elapsed_seconds);
     }
@@ -172,7 +216,7 @@ private:
     const float scale = SDL_GetWindowDisplayScale(window_);
     const float density = SDL_GetWindowPixelDensity(window_);
     const float logical_scale = scale > 0.0f && density > 0.0f ? scale / density : 1.0f;
-    ImGui::GetStyle().FontScaleDpi = logical_scale;
+    update_style(logical_scale);
     ImGui::NewFrame();
     const auto *viewport = ImGui::GetMainViewport();
     const float toolbar_height = draw_toolbar(playback, *viewport, elapsed_seconds);
@@ -202,6 +246,7 @@ private:
   bool platform_backend_ = false;
   bool render_backend_ = false;
   bool vsync_ = false;
+  float style_scale_ = 0.0f;
 };
 
 } // namespace
