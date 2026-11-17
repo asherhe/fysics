@@ -51,3 +51,9 @@ cmake --build --preset default --target fysics_coverage
 ./build/default/demo/demo
 ```
 
+On Windows, run `build\default\demo\demo.exe`. The build places `SDL3.dll` next to the executable when using shared SDL.
+
+The demo starts running as soon as it opens. **Pause** freezes the simulation, **Resume** continues it, and **Step** advances it by 1/120 second while paused. **Reset** restores the starting positions, velocities, and elapsed simulation time while keeping the current play or pause state.
+
+The two circles move toward each other, pass through each other with the current physics engine, and eventually leave the view. Resizing the window reveals more or less of the world at the same zoom.
+
