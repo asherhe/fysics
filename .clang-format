@@ -23,15 +23,18 @@ ReflowComments: true
 SortIncludes: CaseSensitive
 IncludeBlocks: Regroup
 IncludeCategories:
+  # SDL3
+  - Regex: '^<SDL3/.*>'
+    Priority: 2
   # catch2
   - Regex: '^<catch2/.*>'
-    Priority: 2
+    Priority: 3
   # fysics
   - Regex: '^["<]fysics/.*[">]'
-    Priority: 3
+    Priority: 5
   # c++ standard library
   - Regex: '^<.*>'
     Priority: 1
   # all other
   - Regex: '.*'
-    Priority: 4
+    Priority: 10
