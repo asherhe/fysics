@@ -44,11 +44,29 @@ std::optional<detail::Contact> collide(
   float dist = d.norm();
   if (dist >= a.radius) return std::nullopt;
 
-  // TODO: guard against dist == 0
-  Vec2 n = d / dist;
-  Vec2 contact_b = ca_b + n * a.radius;     // in B coords
-  Vec2 contact = xf_b.transform_point(contact_b);
-  float penet_depth = a.radius - dist;
+  Vec2 n, contact;
+  float penet_depth;
+  // circle center is inside box
+  if (dist == 0.0f) {
+    // distance to nearest faces
+    float dx = half_x - abs(ca_b.x);
+    float dy = half_x - abs(ca_b.y);
+    
+    if (dx < dy) {
+      n = { ca_b.x < 0.0f ? -1.0f : 1.0f, 0.0f };
+      penet_depth = a.radius + dx;
+    } else {
+      n = { 0.0f, ca_b.y < 0.0f ? -1.0f : 1.0f };
+      penet_depth = a.radius + dy;
+    }
+    contact = xf_b.transform_point(ca_b);
+  } else {
+    n = d / dist;
+    Vec2 contact_b = ca_b + n * a.radius;     // in B coords
+    contact = xf_b.transform_point(contact_b);
+    penet_depth = a.radius - dist;
+  }
+  
   return detail::Contact{nullptr, nullptr, contact, xf_b.transform_vector(n), penet_depth};
 }
 
@@ -76,14 +94,14 @@ std::optional<detail::Contact> collide(
   for (std::size_t i = 0; i < 4; ++i) {
     Vec2& L = axes[i];
     float sep = abs(c_dist.dot(L)) - (proj_radius(a, xf_a, L) + proj_radius(b, xf_b, L));
-    if (sep >= 0.0) return std::nullopt;
+    if (sep >= 0.0f) return std::nullopt;
     if (sep > max_sep) { 
       max_sep = sep; 
       sep_axis = L; 
       penet_box_idx = (i < 2) ? 1 : 0;
     }
   }
-  Vec2 n = sep_axis * (c_dist.dot(sep_axis) < 0.0f ? -1 : 1);
+  Vec2 n = sep_axis * (c_dist.dot(sep_axis) < 0.0f ? -1.0f : 1.0f);
 
   const BoxShape& penet_box = penet_box_idx ? b : a;
   const Mat23& penet_xf = penet_box_idx ? xf_b : xf_a;
