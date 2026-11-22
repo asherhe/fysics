@@ -12,6 +12,8 @@ struct Contact {
 
   // contact normal, pointing A->B
   Vec2 normal;
+
+  // TODO: separation depth
 };
 
 } // namespace fysics::detail

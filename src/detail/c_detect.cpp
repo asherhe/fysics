@@ -5,8 +5,16 @@
 #include "world_impl.hpp"
 
 using std::clamp;
+using std::abs;
 
 namespace fysics {
+
+// projection half-extents of a box onto a line
+float proj_radius(const BoxShape& box, const Mat23& xf, Vec2 L) {
+  Vec2 half_x = xf.linear.c0 * (0.5f * box.size.x);
+  Vec2 half_y = xf.linear.c1 * (0.5f * box.size.y);
+  return abs(half_x.dot(L)) + abs(half_y.dot(L));
+}
 
 std::optional<detail::Contact> collide(
   const CircleShape& a, Mat23 xf_a, 
@@ -49,6 +57,51 @@ std::optional<detail::Contact> collide(
   auto c = collide(b, xf_b, a, xf_a);
   if (c) c->normal = -c->normal;            // normal must be A->B in original 
   return c;
+}
+
+std::optional<detail::Contact> collide(
+  const BoxShape& a, Mat23 xf_a, 
+  const BoxShape& b, Mat23 xf_b 
+) {
+  Vec2 axes[4] = { xf_a.linear.c0, xf_a.linear.c1, xf_b.linear.c0, xf_b.linear.c1 };
+  Vec2 ca = xf_a.transform_point(a.center_of_mass());
+  Vec2 cb = xf_b.transform_point(b.center_of_mass());
+  Vec2 c_dist = cb - ca;
+
+  float max_sep = -std::numeric_limits<float>::infinity();
+  Vec2 sep_axis;
+  int penet_box_idx = 0;
+  for (std::size_t i = 0; i < 4; ++i) {
+    Vec2& L = axes[i];
+    float sep = abs(c_dist.dot(L)) - (proj_radius(a, xf_a, L) + proj_radius(b, xf_b, L));
+    if (sep >= 0.0) return std::nullopt;
+    if (sep > max_sep) { 
+      max_sep = sep; 
+      sep_axis = L; 
+      penet_box_idx = (i < 2) ? 1 : 0;
+    }
+  }
+  Vec2 n = sep_axis * (c_dist.dot(sep_axis) < 0.0f ? -1 : 1);
+
+  const BoxShape& penet_box = penet_box_idx ? b : a;
+  const Mat23& penet_xf = penet_box_idx ? xf_b : xf_a;
+  const BoxShape& recev_box = penet_box_idx ? a : b;
+  const Mat23& recev_xf = penet_box_idx ? xf_a : xf_b;
+
+  const Vec2 corner_distances[4] = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
+  float min_dist = std::numeric_limits<float>::infinity();
+  Vec2 contact;
+  for (const Vec2& v : corner_distances) {
+    Vec2 d_from_ctr = {0.5f * penet_box.size.x * v.x, 0.5f * penet_box.size.y * v.y};
+    Vec2 corner_in_world = penet_xf.transform_point(d_from_ctr);
+    float dist = (recev_xf.transform_point(recev_box.center_of_mass()) - corner_in_world).norm();
+    if (dist < min_dist) { 
+      min_dist = dist;
+      contact = corner_in_world; 
+    }
+  }
+
+  return detail::Contact{nullptr, nullptr, contact, n};
 }
 
 std::vector<detail::Contact> World::Impl::detect_collisions() {
