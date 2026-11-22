@@ -51,7 +51,7 @@ std::optional<detail::Contact> collide(
   if (dist == 0.0f) {
     // distance to nearest faces
     float dx = half_x - abs(ca_b.x);
-    float dy = half_x - abs(ca_b.y);
+    float dy = half_y - abs(ca_b.y);
     
     if (dx < dy) {
       n = { ca_b.x < 0.0f ? -1.0f : 1.0f, 0.0f };
