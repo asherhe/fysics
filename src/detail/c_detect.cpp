@@ -133,8 +133,31 @@ std::optional<detail::Contact> shape_detect_collision(
 }
 
 std::vector<detail::Contact> World::Impl::detect_collisions() {
-  // TODO
-  return std::vector<detail::Contact>{};
+  std::vector<detail::Contact> contacts;
+
+  for (auto a = body_pool.begin(); a != body_pool.end(); ++a) {
+    auto b = a;
+    for (++b; b != body_pool.end(); ++b) {
+      detail::BodyImpl& body_a = *a;
+      detail::BodyImpl& body_b = *b;
+      auto contact = shape_detect_collision(
+        body_a.get_shape_ref(), body_a.get_body2world(), 
+        body_b.get_shape_ref(), body_b.get_body2world()
+      );
+      // both bodies cannot move
+      if (body_a.get_sim_type() == SimulationType::Static && 
+          body_b.get_sim_type() == SimulationType::Static)
+        continue;
+
+      // contact BodyImpls are filled in here
+      if (contact) {
+        contact->bodyA = &body_a;
+        contact->bodyB = &body_b;
+        contacts.push_back(*contact);
+      }
+    }
+  }
+  return contacts;
 }
 
 } // namespace fysics

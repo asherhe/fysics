@@ -97,6 +97,9 @@ public:
     update_derived_fields();
   }
 
+  const Shape& get_shape_ref() const noexcept { return shape_; }
+  Mat23 get_body2world() const noexcept { return body2world_; }
+
   Vec2 get_center_of_mass() const noexcept { return center_of_mass_; }
 
   AABB get_world_aabb() const noexcept { return world_aabb_; }
