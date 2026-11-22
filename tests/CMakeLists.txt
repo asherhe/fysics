@@ -4,6 +4,7 @@ add_executable(fysics_tests
   shape_test.cpp
   body_test.cpp
   world_test.cpp
+  c_detect_test.cpp
 )
 
 target_link_libraries(fysics_tests PRIVATE Fysics::core Catch2::Catch2WithMain)
