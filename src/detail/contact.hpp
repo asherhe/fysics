@@ -13,7 +13,8 @@ struct Contact {
   // contact normal, pointing A->B
   Vec2 normal;
 
-  // TODO: separation depth
+  // penetration depth (B penetrating A, always positive)
+  float depth;
 };
 
 } // namespace fysics::detail

@@ -27,7 +27,8 @@ std::optional<detail::Contact> collide(
   if (dist >= a.radius + b.radius) return std::nullopt;
 
   Vec2 n = d / dist;
-  return detail::Contact{nullptr, nullptr, a_center + n * a.radius, n};
+  float penet_depth = a.radius + b.radius - dist;
+  return detail::Contact{nullptr, nullptr, a_center + n * a.radius, n, penet_depth};
 }
 
 std::optional<detail::Contact> collide(
@@ -47,7 +48,8 @@ std::optional<detail::Contact> collide(
   Vec2 n = d / dist;
   Vec2 contact_b = ca_b + n * a.radius;     // in B coords
   Vec2 contact = xf_b.transform_point(contact_b);
-  return detail::Contact{nullptr, nullptr, contact, xf_b.transform_vector(n)};
+  float penet_depth = a.radius - dist;
+  return detail::Contact{nullptr, nullptr, contact, xf_b.transform_vector(n), penet_depth};
 }
 
 std::optional<detail::Contact> collide(
@@ -101,7 +103,7 @@ std::optional<detail::Contact> collide(
     }
   }
 
-  return detail::Contact{nullptr, nullptr, contact, n};
+  return detail::Contact{nullptr, nullptr, contact, n, -max_sep};
 }
 
 std::vector<detail::Contact> World::Impl::detect_collisions() {
