@@ -1,5 +1,6 @@
 #include <optional>
 #include <algorithm>
+#include <variant>
 
 #include "fysics/math.hpp"
 #include "world_impl.hpp"
@@ -10,15 +11,15 @@ using std::abs;
 namespace fysics {
 
 // projection half-extents of a box onto a line
-float proj_radius(const BoxShape& box, const Mat23& xf, Vec2 L) {
+float proj_radius(const BoxShape& box, const Mat23& xf, const Vec2& L) {
   Vec2 half_x = xf.linear.c0 * (0.5f * box.size.x);
   Vec2 half_y = xf.linear.c1 * (0.5f * box.size.y);
   return abs(half_x.dot(L)) + abs(half_y.dot(L));
 }
 
 std::optional<detail::Contact> collide(
-  const CircleShape& a, Mat23 xf_a, 
-  const CircleShape& b, Mat23 xf_b
+  const CircleShape& a, const Mat23& xf_a, 
+  const CircleShape& b, const Mat23& xf_b
 ) {
   Vec2 a_center = xf_a.transform_point(a.center_of_mass());
   Vec2 b_center = xf_b.transform_point(b.center_of_mass());
@@ -32,8 +33,8 @@ std::optional<detail::Contact> collide(
 }
 
 std::optional<detail::Contact> collide(
-  const CircleShape& a, Mat23 xf_a, 
-  const BoxShape& b, Mat23 xf_b
+  const CircleShape& a, const Mat23& xf_a, 
+  const BoxShape& b, const Mat23& xf_b
 ) {
   Mat23 b_from_a = xf_b.inverse_rot() * xf_a;    // A body coords -> B
   Vec2 ca_b = b_from_a.transform_point(a.center_of_mass());
@@ -66,13 +67,13 @@ std::optional<detail::Contact> collide(
     contact = xf_b.transform_point(contact_b);
     penet_depth = a.radius - dist;
   }
-  
+
   return detail::Contact{nullptr, nullptr, contact, xf_b.transform_vector(n), penet_depth};
 }
 
 std::optional<detail::Contact> collide(
-  const BoxShape& a, Mat23 xf_a, 
-  const CircleShape& b, Mat23 xf_b
+  const BoxShape& a, const Mat23& xf_a, 
+  const CircleShape& b, const Mat23& xf_b
 ) {
   auto c = collide(b, xf_b, a, xf_a);
   if (c) c->normal = -c->normal;            // normal must be A->B in original 
@@ -80,8 +81,8 @@ std::optional<detail::Contact> collide(
 }
 
 std::optional<detail::Contact> collide(
-  const BoxShape& a, Mat23 xf_a, 
-  const BoxShape& b, Mat23 xf_b 
+  const BoxShape& a, const Mat23& xf_a, 
+  const BoxShape& b, const Mat23& xf_b 
 ) {
   Vec2 axes[4] = { xf_a.linear.c0, xf_a.linear.c1, xf_b.linear.c0, xf_b.linear.c1 };
   Vec2 ca = xf_a.transform_point(a.center_of_mass());
@@ -122,6 +123,13 @@ std::optional<detail::Contact> collide(
   }
 
   return detail::Contact{nullptr, nullptr, contact, n, -max_sep};
+}
+
+std::optional<detail::Contact> shape_detect_collision(
+  const Shape& a, const Mat23& xf_a, 
+  const Shape& b, const Mat23& xf_b
+) {
+  return std::visit([&](auto& sa, auto& sb) { return collide(sa, xf_a, sb, xf_b); }, a, b);
 }
 
 std::vector<detail::Contact> World::Impl::detect_collisions() {
