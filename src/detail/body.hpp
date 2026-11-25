@@ -91,7 +91,7 @@ public:
     update_derived_fields();
   }
 
-  const Shape& get_shape_ref() const noexcept { return shape_; }
+  const Shape& get_shape() const noexcept { return shape_; }
   void set_shape(const Shape &shape) noexcept {
     shape_ = shape;
     update_derived_fields();

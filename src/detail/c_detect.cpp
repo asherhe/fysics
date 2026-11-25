@@ -141,8 +141,8 @@ std::vector<detail::Contact> World::Impl::detect_collisions() {
       detail::BodyImpl& body_a = *a;
       detail::BodyImpl& body_b = *b;
       auto contact = shape_detect_collision(
-        body_a.get_shape_ref(), body_a.get_body2world(), 
-        body_b.get_shape_ref(), body_b.get_body2world()
+        body_a.get_shape(), body_a.get_body2world(), 
+        body_b.get_shape(), body_b.get_body2world()
       );
       // both bodies cannot move
       if (body_a.get_sim_type() == SimulationType::Static && 
