@@ -25,13 +25,4 @@ void World::Impl::integrate(float dt) {
   }
 }
 
-std::vector<detail::Contact> World::Impl::detect_collisions() {
-  // TODO
-  return std::vector<detail::Contact>{};
-}
-
-void World::Impl::resolve_collisions(const std::vector<detail::Contact> contacts) {
-  // TODO
-}
-
 } // namespace fysics
