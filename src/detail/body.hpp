@@ -91,13 +91,12 @@ public:
     update_derived_fields();
   }
 
-  Shape get_shape() const noexcept { return shape_; }
+  const Shape& get_shape_ref() const noexcept { return shape_; }
   void set_shape(const Shape &shape) noexcept {
     shape_ = shape;
     update_derived_fields();
   }
 
-  const Shape& get_shape_ref() const noexcept { return shape_; }
   Mat23 get_body2world() const noexcept { return body2world_; }
 
   Vec2 get_center_of_mass() const noexcept { return center_of_mass_; }
